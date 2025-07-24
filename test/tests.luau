@@ -31,3 +31,19 @@ Murex.registerCommand("add-optional", {
 
 Murex.execute("add-optional 7")
 Murex.execute("add-optional 29 5")
+
+Murex.registerCommand("add-return", {
+    description = "basic addition operator and returns result",
+    permissions = {},
+    arguments = function()
+        return Murex.args.number(), Murex.args.number()
+    end,
+    callback = function(a, b)
+        return a + b
+    end,
+})
+
+do
+    local result = Murex.execute("add-return 5 3")
+    assert(result == 8)
+end

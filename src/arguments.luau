@@ -1,3 +1,4 @@
+local types = require("./types")
 local console = require("./console")
 
 local numberT = {
@@ -7,7 +8,32 @@ local numberT = {
     }
 }
 
+-- local stringT = {
+--     transform = tostring,
+--     analysis = {
+--         optional = false,
+--     }
+-- }
+
+-- local booleanT = {
+--     transform = function()
+        
+--     end,
+--     analysis = {
+--         optional = false,
+--     }
+-- }
+
+local function optional<T>(argument: T): T?
+    local a: types.CommandArgument<T> = argument :: any
+    a.optional = true
+    return a :: any
+end
+
 return {
-    -- string = console.registerType("string", stringT)
+    optional = optional,
+
     number = console.registerType("number", numberT),
+    -- string = console.registerType("string", stringT),
+    -- boolean = console.registerType("boolean", booleanT),
 }

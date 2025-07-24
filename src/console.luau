@@ -1,5 +1,7 @@
+local types = require("./types")
+
 local commands: { [string]: Command<...any> } = {}
-local types = {}
+local argTypes = {}
 
 local function execute(s: string)
     local tokens = s:split(" ")
@@ -10,12 +12,12 @@ local function execute(s: string)
     local command = commands[cmd]
 
     local args = {}
-    for i = 2, #cmd do
-        local token = tokens[i]
-        table.insert(args, command.args[i - 1].transform(token))
+    for i = 1, #command.args do
+        local token = tokens[i + 1]
+        table.insert(args, command.args[i].transform(token))
     end
 
-    command.callback(table.unpack(args))
+    return command.callback(table.unpack(args))
 end
 
 local function registerType<T>(
@@ -27,12 +29,13 @@ local function registerType<T>(
         }
     }
 )
-    assert(types[name] == nil, `Cannot register type: type by name '{name}' already exists.`)
-    types[name] = props
+    assert(argTypes[name] == nil, `Cannot register type: type by name '{name}' already exists.`)
+    argTypes[name] = props
 
     return function(): T
         return {
             name = name,
+            optional = props.analysis.optional,
             transform = props.transform,
         } :: any
     end
@@ -45,14 +48,9 @@ type CommandProps<T...> = {
     callback: (T...) -> ...any,
 }
 
-type CommandArgument<T> = {
-    name: string,
-    transform: (string) -> T,
-}
-
 type Command<T...> = {
     callback: (T...) -> ... any,
-    args: { CommandArgument<any> },
+    args: { types.CommandArgument<any> },
 }
 
 local function registerCommand<T...>(name: string, props: CommandProps<T...>)
