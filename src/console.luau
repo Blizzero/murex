@@ -3,18 +3,75 @@ local types = require("./types")
 local commands: { [string]: Command<...any> } = {}
 local argTypes = {}
 
+local function parse(s: string): {
+    command: string?,
+    args: { string },
+}
+    local tokens: { string } = {}
+    local token = ""
+
+    local function is_quote(c: string): boolean
+        return c == "'" or c == '"'
+    end
+
+    local function quoted_string(c: string)
+        if #token == 0 then
+            token ..= "'"
+        elseif is_quote(token:sub(1, 1)) then
+            table.insert(tokens, token:sub(2))
+            token = ""
+        else
+            token ..= c
+        end
+    end
+
+    for _, c in s:split("") do
+        if c == " " then
+            if is_quote(token:sub(1, 1)) then
+                token ..= c
+            elseif #token > 0 then
+                table.insert(tokens, token)
+                token = ""
+            end
+        elseif is_quote(c) then
+            quoted_string(c)
+        else
+            token ..= c
+        end
+    end
+
+    if #token > 0 then
+        table.insert(tokens, token)
+    end
+
+    local cmd = table.remove(tokens, 1)
+    return {
+        command = cmd,
+        args = tokens,
+    }
+end
+
 local function execute(s: string)
-    local tokens = s:split(" ")
-    local cmd = tokens[1]
+    local data = parse(s)
 
-    assert(cmd, "No command provided.")
+    assert(data.command, "No command provided.")
+    local command = commands[data.command]
 
-    local command = commands[cmd]
+    local requiredArgs = 0
+    for _, arg in command.args do
+        if arg.optional == false then
+            requiredArgs += 1
+        end
+    end
+
+    if #data.args < requiredArgs then
+        error(`Invalid args count: got {#data.args}, expected at least {requiredArgs}`)
+    end
 
     local args = {}
     for i = 1, #command.args do
-        local token = tokens[i + 1]
-        table.insert(args, command.args[i].transform(token))
+        local raw = data.args[i]
+        table.insert(args, command.args[i].transform(raw))
     end
 
     return command.callback(table.unpack(args))
@@ -68,4 +125,5 @@ return {
     registerCommand = registerCommand,
     registerType = registerType,
     execute = execute,
+    parse = parse,
 }

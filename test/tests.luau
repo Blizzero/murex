@@ -62,9 +62,18 @@ Murex.registerCommand("concat", {
     end,
 })
 
+-- basic strings
 do
     assert(Murex.execute("concat foo bar") == "foobar")
 end
+
+-- quotes
+do
+    assert(Murex.execute("concat foo bar") == "foobar")
+    assert(Murex.execute("concat 'foo' 'bar'") == "foobar")
+    assert(Murex.execute("concat 'foo bar' 'hello world'") == "foo barhello world")
+end
+
 
 Murex.registerCommand("is-truthy", {
     description = "determines if a boolean is truthy",
