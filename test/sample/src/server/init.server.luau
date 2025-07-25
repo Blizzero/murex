@@ -1,7 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Murex = require(ReplicatedStorage.Packages.Murex)
-local console = require(ReplicatedStorage.Packages.Murex.console)
 local opt = Murex.args.optional
 
 -- Murex.registerCommand("printf", {
@@ -96,10 +95,6 @@ do
 end
 
 do
-    -- console.parse("concat foo bar")
-    -- print(console.parse("concat 'foo' 'bar'"))
-    -- print(console.parse("concat 'foo bar' 'hello world'"))
-
     assert(Murex.execute("concat foo bar") == "foobar")
     assert(Murex.execute("concat 'foo' 'bar'") == "foobar")
     assert(Murex.execute("concat 'foo bar' 'hello world'") == "foo barhello world")
