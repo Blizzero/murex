@@ -10,10 +10,10 @@
       "Packages": {
         "$className": "Folder",
         "Murex": {
-          "$path": "../../murex"
+          "$path": "../../murex/src"
         },
         "MurexClient": {
-          "$path": "../../murex-client"
+          "$path": "../../murex-client/src"
         }
       }
     },

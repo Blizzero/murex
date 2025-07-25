@@ -1,7 +1,9 @@
 [package]
-name = "blizzero/murex"
+name = "blizzero/murex-client"
 version = "0.1.0"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 
 [dependencies]
+Vide = "centau/vide@0.3.1"
+# Murex = "blizzero/murex@0.1.0"
